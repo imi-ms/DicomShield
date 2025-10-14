@@ -1,0 +1,7 @@
+REST_ROOT = "https://localhost/aets/DICOMSHIELD" 
+VERIFY_SSL = False
+HOST = "localhost"
+AET = "DICOMSHIELD"
+PORT = 11112
+SCU_AET = "TEST_SCU"
+MOCK_SERVER_AET = "CLIENT_PACS"

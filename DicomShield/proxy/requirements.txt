@@ -1,0 +1,5 @@
+pydicom
+pynetdicom
+pyyaml
+requests
+xmltodict

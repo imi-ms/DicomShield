@@ -1,0 +1,67 @@
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./certs:/etc/nginx/certs
+    depends_on:
+      - dicomshield
+      - orthanc
+      - dicom-rst
+    networks:
+      - default
+
+  dicomshield:
+    build: ./
+    image: dicomshield
+    ports:
+      - "11112:11112"
+      - "11113:11113"
+    volumes:
+      - ./configs/pseudonym_config.yml:/configs/pseudonym_config.yml
+    depends_on:
+      - orthanc
+    networks:
+      - default
+      - compose-wildfly_default
+
+  orthanc:
+    image: jodogne/orthanc
+    ports:
+      - 4242:4242  # DICOM
+      - 8042:8042  # HTTP
+    command: /run/secrets/
+    volumes:
+      - orthanc_data:/var/lib/orthanc/db
+      - ./certs:/etc/orthanc/certs
+    secrets:
+      - orthanc.json
+    networks:
+      - default
+
+
+  dicom-rst:
+    image: ghcr.io/umessen/dicom-rst:v0.2.1
+    depends_on:
+      - dicomshield
+    ports:
+        - 8070:8070
+    volumes:
+      - ./dicom-rst.yml:/config.yaml:ro
+    networks:
+      - default
+
+
+networks:
+  compose-wildfly_default:
+    external: True
+
+volumes:
+  orthanc_data:
+
+secrets:
+  orthanc.json:
+    file: orthanc.json

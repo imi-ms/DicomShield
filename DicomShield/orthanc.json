@@ -1,0 +1,18 @@
+{
+    "DicomAet": "ORTHANC",
+    "DicomPort": 4242,
+    "DicomServerEnabled": true,
+    "HttpServerEnabled": true,
+    "HttpPort": 8042,
+    "RemoteAccessAllowed": true,
+    "AuthenticationEnabled": false,
+    "SslEnabled": false,
+    "SslCertificate": "/etc/orthanc/certs/pacs.crt",
+    "SslKey": "/etc/orthanc/certs/pacs.key",
+    "SslCaCertificate": "/etc/orthanc/certs/rootCA.pem",
+    "DicomModalities": {
+      "DICOMSHIELD": ["DICOMSHIELD", "dicomshield", 11112],
+      "DICOMSHIELD-PACS": ["DICOMSHIELD-PACS", "dicomshield", 11113],
+      "WEASIS": ["WEASIS", "host.docker.internal", 11113]
+    }
+  }

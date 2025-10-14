@@ -1,0 +1,11 @@
+.idea*
+*.iml
+DicomShield/certs/*
+DicomShield/proxy/sps_config.yml
+*config.yml
+*vscode
+compose-wildfly/
+.venv/
+.pytest_cache/*
+__pycache__/*
+*.py[cod]
