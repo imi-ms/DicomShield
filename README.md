@@ -78,29 +78,29 @@ Startup gPAS, open web UI (http://localhost:8080/gpas-web/), and create the doma
 We recommend  [Weasis](https://weasis.org/en/) for testing. After installation, you must configure the dicom endpoints 
 in the settings:
 
-![](docs/weasis-settings1.png)
+![](DicomShield/docs/weasis-settings1.png)
 
-![](docs/weasis-settings2.png)
+![](DicomShield/docs/weasis-settings2.png)
 
 Below "DICOM node", click "Add new"
 
-![](docs/weasis-settings3.png)
+![](DicomShield/docs/weasis-settings3.png)
 
 Optionally, if you want to put images on the orthanc PACS, you can also configure it here. Otherwise, you can use the 
 web interface of orthanc (http://localhost:8042) to upload some test data.
 
-![](docs/weasis-settings4.png)
+![](DicomShield/docs/weasis-settings4.png)
 
 For the receival of images, you need to set up the calling node. 
 
-![](docs/weasis-settings5.png)
+![](DicomShield/docs/weasis-settings5.png)
 
 The same settings must be configured in `config.yml` of DicomShield (ALLOWED_AETS)!
 
 Now, you can use the import function of Weasis to search your DicomShield!
 
-![](docs/weasis-import1.png)
-![](docs/weasis-import2.png)
+![](DicomShield/docs/weasis-import1.png)
+![](DicomShield/docs/weasis-import2.png)
 
 
 ## Examples URLs of DICOMweb
