@@ -1,3 +1,5 @@
+![Header](./DicomShield/docs/banner.png)
+
 # DicomShield
 
 DicomShield is a reverse proxy for DICOM C-FIND and C-MOVE operations. It protects the privacy of the patients in DICOM 
@@ -75,7 +77,7 @@ Download [gPAS](https://www.ths-greifswald.de/forscher/gpas/) Docker container. 
 Startup gPAS, open web UI (http://localhost:8080/gpas-web/), and create the domain "DicomShield".
 
 ## Weasis setup
-We recommend  [Weasis](https://weasis.org/en/) for testing. After installation, you must configure the dicom endpoints 
+We recommend  [Weasis](https://weasis.org/en/) for testing. After installation, you have to configure the DICOM endpoints 
 in the settings:
 
 ![](DicomShield/docs/weasis-settings1.png)
@@ -86,12 +88,12 @@ Below "DICOM node", click "Add new"
 
 ![](DicomShield/docs/weasis-settings3.png)
 
-Optionally, if you want to put images on the orthanc PACS, you can also configure it here. Otherwise, you can use the 
-web interface of orthanc (http://localhost:8042) to upload some test data.
+Optionally, if you want to put images on the orthanc PACS, you can also configure it here. *Otherwise, we recommend to use the 
+web interface of orthanc (runs by default at http://localhost:8042) to upload some test data.*
 
 ![](DicomShield/docs/weasis-settings4.png)
 
-For the receival of images, you need to set up the calling node. 
+For the receival of images via C-MOVE, you need to set up the calling node. 
 
 ![](DicomShield/docs/weasis-settings5.png)
 
@@ -117,7 +119,8 @@ DicomShield has been tested with the following clients:
 
 and the following servers: 
 * [orthanc](https://www.orthanc-server.com/) <br>
-  * example config included in the container
+  * An example config is included in the container (orthanc.json)
 * [dicoogle](https://dicoogle.com/)<br>
   * replace `<move-destinations />` in server.xml with `<move-destinations><move-destination aetitle="DICOMSHIELD-PACS" address="localhost" port="11113" public="true"
                               description="DicomShields C-STORE endpoint"/></move-destinations>`
+  * Note: [C-GET seems to be not supported by dicoogle](https://github.com/dicoogle/dicoogle/issues/393)
