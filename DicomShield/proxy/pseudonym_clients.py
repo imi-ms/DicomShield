@@ -8,7 +8,6 @@ import xmltodict
 
 with open("configs/config.yml") as f:
     pseudonym_config = yaml.safe_load(f)["PSEUDONYMIZATION_SERVER"]
-    print(pseudonym_config)
 
 
 class PseudonymClient:
@@ -58,6 +57,12 @@ class PseudonymClient:
         except Exception as e:
             logging.exception(f"An error occurred: {e}")
             return None
+
+    def test_connection(self):
+        logging.info(f"Testing connection to PSEUDONYMIZATION_SERVER='{self.base_url}'")
+        url = f"{self.base_url}/metadata"
+        response = requests.get(url, auth=self.auth)
+        response.raise_for_status()
 
     def post(self, endpoint, data=None):
         url = f"{self.base_url}/{endpoint}"

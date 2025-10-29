@@ -5,7 +5,8 @@ import yaml
 from pseudonym_clients import MIIClient, gPASClient
 
 with open("configs/config.yml")as f:
-    pseudonym_config = yaml.safe_load(f)["PSEUDONYMIZATION_SERVER"]
+    config = yaml.safe_load(f)
+    pseudonym_config = config["PSEUDONYMIZATION_SERVER"]
 
 
 class Anonymizer:
@@ -20,23 +21,10 @@ class Anonymizer:
                 raise Exception(f"No such CLIENT_TYPE={client_version} is supported!")
             
         # Fields that will be swapped by pseudonym value
-        self.pseudonymize_fields = ['PatientID', 'StudyID', 'SOPInstanceUID', 'StudyInstanceUID', 'SeriesInstanceUID']
+        self.pseudonymize_fields = config["FIELDS_FOR_PSEUDO"]
 
         # Fields that will be cleared
-        self.anonymize_fields = [
-            'PatientName',
-            'IssuerOfPatientID',
-            'PatientBirthDate',
-            'PatientSex',
-            'PatientAddress',
-            'PatientTelephoneNumbers',
-            'AccessionNumber',
-            'InstitutionName',
-            'InstitutionAddress',
-            'InstitutionCodeSequence',
-            'ReferringPhysicianName',
-            'ReferringPhysicianTelephoneNumbers'
-        ]
+        self.anonymize_fields = config["FIELDS_FOR_REMOVAL"]
 
 
 

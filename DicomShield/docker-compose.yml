@@ -41,6 +41,8 @@ services:
       - orthanc.json
     networks:
       - default
+#    environment:
+#      VERBOSE_ENABLED: true
 
 
   dicom-rst:

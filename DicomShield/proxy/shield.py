@@ -1,6 +1,6 @@
 import logging
 import threading
-from pynetdicom import AE, evt, StoragePresentationContexts
+from pynetdicom import AE, evt, StoragePresentationContexts, AllStoragePresentationContexts
 from pynetdicom.sop_class import (
     Verification,
     CTImageStorage,
@@ -17,8 +17,6 @@ from pynetdicom.sop_class import (
 from c_handlers import *
 from utils import shared_queue, shield_anonymizer
 
-
-
 # Configure logging
 logging.basicConfig(level=logging.WARNING)
 
@@ -32,34 +30,40 @@ def run_ae_server():
     ae = AE(ae_title=ae_title)
 
     # Add all necessary SOP Classes (associations this SCU/SCP will accept)
-    ae.add_supported_context(CTImageStorage)
-    ae.add_supported_context(MRImageStorage)
-    ae.add_supported_context(Verification)
-    # ae.add_supported_context(StudyRootQueryRetrieveInformationModelGet)
+
+    for context in AllStoragePresentationContexts:
+        ae.add_supported_context(context.abstract_syntax, scu_role=True, scp_role=True)
+
+    ae.add_supported_context(StudyRootQueryRetrieveInformationModelGet)
     ae.add_supported_context(StudyRootQueryRetrieveInformationModelFind)
     ae.add_supported_context(PatientRootQueryRetrieveInformationModelFind)
     ae.add_supported_context(StudyRootQueryRetrieveInformationModelMove)
     ae.add_supported_context(PatientRootQueryRetrieveInformationModelMove)
 
-    ae.requested_contexts = StoragePresentationContexts
+    # ae.requested_contexts = StoragePresentationContexts
 
     # Define handlers for DICOM events
     handlers = [
+        (evt.EVT_ESTABLISHED, handle_established),
         (evt.EVT_C_STORE, handle_store),
-        # (evt.EVT_C_STORE, handle_store),
         (evt.EVT_C_FIND, handle_find),
+        (evt.EVT_C_GET, handle_get),
         (evt.EVT_C_MOVE, handle_move),
         (evt.EVT_C_ECHO, handle_echo),
     ]
 
-
     ae.start_server(('0.0.0.0', local_port), evt_handlers=handlers, block=True)
 
+
+def handle_established(evt):
+    # for context in evt.assoc.accepted_contexts:
+    #     print(f"Accepted: {context.abstract_syntax} with {context.transfer_syntax}")
+    pass  # uncomment for debugging
 
 
 def run_internal_server():
     """Since C-MOVE triggers a C-STORE, we need to redirect the C-STORE to us, pseudonymize and send the result back"""
-    local_ae   = config["C_STORE_ENDPOINT"]["AET"]
+    local_ae = config["C_STORE_ENDPOINT"]["AET"]
     local_port = config["C_STORE_ENDPOINT"]["PORT"]
 
     # 1. Define the C-STORE SCP callback that anonymizes and forwards
@@ -77,15 +81,16 @@ def run_internal_server():
 
     handlers = [(evt.EVT_C_STORE, proxy_store), (evt.EVT_C_ECHO, handle_echo)]
     ae = AE(ae_title=local_ae)
-    ae.add_supported_context(MRImageStorage)
-    ae.add_supported_context(CTImageStorage)
-    ae.add_supported_context(XRayAngiographicImageStorage)
+
+    for context in AllStoragePresentationContexts:
+        ae.add_supported_context(context.abstract_syntax)
+
     ae.add_supported_context(Verification)
 
     ae = ae.start_server(('0.0.0.0', local_port), block=False, evt_handlers=handlers)
 
-    #server = threading.Thread(target=ae.start_server, args=(('0.0.0.0', local_port),), kwargs={'block': True, 'evt_handlers': handlers})
-    #server.start()
+    # server = threading.Thread(target=ae.start_server, args=(('0.0.0.0', local_port),), kwargs={'block': True, 'evt_handlers': handlers})
+    # server.start()
     logging.info(f"Started C-STORE SCP server on AE title '{local_ae}' at port {local_port}")
     return ae
 
@@ -107,7 +112,16 @@ def verify_proxy_connection():
 
 
 if __name__ == '__main__':
+    print("""   _ _                   _   _     _   _ 
+ _| |_|___ ___ _____ ___| |_|_|___| |_| |
+| . | |  _| . |     |_ -|   | | -_| | . |
+|___|_|___|___|_|_|_|___|_|_|_|___|_|___|""")
+
+    # test upstream connection
     verify_proxy_connection()
+
+    # test gPAS-connection
+    shield_anonymizer.pseudonym_client.test_connection()
+
     forward_ae = run_internal_server()
     run_ae_server()
-
