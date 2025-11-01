@@ -12,7 +12,8 @@ from pynetdicom.sop_class import (
     PatientRootQueryRetrieveInformationModelFind,
     PatientRootQueryRetrieveInformationModelMove,
     MRImageStorage,
-    CTImageStorage
+    CTImageStorage,
+    OphthalmicThicknessMapStorage
 )
 
 from pydicom import Dataset
@@ -103,7 +104,8 @@ def handle_event(dataset: Dataset, event_context, action="FIND"):
     ae.add_requested_context(event_context.abstract_syntax, event_context.transfer_syntax)
 
     roles = []
-    for context in [MRImageStorage, CTImageStorage, XRayAngiographicImageStorage]: # If we select all, we get > 128
+    for context in [MRImageStorage, CTImageStorage, XRayAngiographicImageStorage,
+                    OphthalmicThicknessMapStorage]:  # If we select all, we get > 128
         ae.add_requested_context(context)
         roles.append(build_role(context, scp_role=True))
 
